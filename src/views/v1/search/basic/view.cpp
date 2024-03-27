@@ -49,6 +49,8 @@ class SearchBasicHandler final
     SearchBasicRequest request_body;
     request_body.ParseRegisteredFields(request.RequestBody());
 
+    transform(request_body.search_key.begin(), request_body.search_key.end(), request_body.search_key.begin(), ::tolower); 
+
     auto result_ids = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kSlave,
         "SELECT ids "
@@ -59,7 +61,7 @@ class SearchBasicHandler final
     auto IDs = result_ids.AsOptionalSingleRow<IDsRow>(
         userver::storages::postgres::kRowTag);
 
-    SearchBasicResponse response;
+    SearchResponse response;
 
     if (IDs.has_value()) {
       userver::storages::postgres::ParameterStore parameters;

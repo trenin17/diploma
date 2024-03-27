@@ -438,7 +438,7 @@ paths:
 
     /v1/search/basic:
         post:
-            description: Get employee by key
+            description: Get employees by key
             parameters:
               - in: header
                 name: Authorization
@@ -457,7 +457,42 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/SearchBasicResponse'
+                                $ref: '#/components/schemas/SearchResponse'
+                '401':
+                    description: Unauthorized
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorMessage'
+                '403':
+                    description: Wrong authorization token
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ErrorMessage'
+
+    /v1/search/full:
+        post:
+            description: Get employees by multiple keys
+            parameters:
+              - in: header
+                name: Authorization
+                description: Token of session user
+                schema:
+                    type: string
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SearchFullRequest'
+            responses:
+                '200':
+                    description: List of employees
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SearchResponse'
 
     /v1/attendance/list-all:
         post:
@@ -1054,8 +1089,20 @@ components:
             properties:
                 search_key:
                     type: string
+
+        SearchFullRequest:
+            type: object
+            additionalProperties: false
+            required:
+              - search_key
+              - limit
+            properties:
+                search_key:
+                    type: string
+                limit:
+                    type: integer
             
-        SearchBasicResponse:
+        SearchResponse:
             type: object
             additionalProperties: false
             required:
